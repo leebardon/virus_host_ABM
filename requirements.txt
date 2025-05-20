@@ -1,14 +1,3 @@
-Core 'MVP' Requirements
-
-1. Model must resolve bacteria (B) and virus (V) particles on multi-cell grid
-2. Nutrient supply for B assumed non-limiting, however model can resolve multiple B functional groups
-3. B groups trade off between growth rate and resistance to V infection
-4. B and V both move up, down, left or right at each timestep
-5. Each B group is targeted only by a specific V group - when they land on same cell infection occurs
-6. Infected B do not grow - after specified time lag they are lysed, dying and producing new V particles
-
-Extended Functionality
-1. Add limiting nutrient supply for B (DOM pools)
-2. OM from lysed B and mortality get recycled into DOM pools
-3. DOM pools can be assigned lability value along a spectrum
-4. Trade off between B uptake rate and substrate affinity
+# To ensure app dependencies are ported from your virtual environment/host machine into your container, run 'pip freeze > requirements.txt' in the terminal to overwrite this file
+numpy
+pytest
