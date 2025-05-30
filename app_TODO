@@ -3,7 +3,7 @@ Core 'MVP' Requirements
 1. Model must resolve bacteria (B) and virus (V) particles on multi-cell grid
 2. Nutrient supply for B assumed non-limiting, however model can resolve multiple B functional groups
 3. B groups trade off between growth rate and resistance to V infection
-4. B and V both move up, down, left or right at each timestep
+4. B and V both move up, down, left or right at each timestep, chosen at random
 5. Each B group is targeted only by a specific V group - when they land on same cell infection occurs
 6. Infected B do not grow - after specified time lag they are lysed, dying and producing new V particles
 
