@@ -4,9 +4,6 @@ import matplotlib.animation as animation
 import random
 from scipy.ndimage import convolve
 
-# Define grid size
-GRID_SIZE = (20, 20)
-
 class Bacteria:
 
     def __init__(self, group_id, growth_rate, resistance, x, y):
@@ -330,3 +327,11 @@ NUM_GROUPS = 2
 
 simulation_state = init_simulation(NUM_BAC, NUM_VIR, NUM_GROUPS)
 animate_simulation(TIMESTEPS)
+
+# TODO: 
+
+"""
+1. Add method to fix abrupt stop/crash at num_steps or when V/B extinct
+2. Add terminal input functionality to collect user input
+3. Save results as output file and plots over time 
+"""
