@@ -176,7 +176,7 @@ def step(bacteria, viruses, dom_pool, timestep):
     for v in viruses:
         for b in bacteria:
             if b.x == v.x and b.y == v.y:
-                b.check_infection(v, timestep)
+                b.check_if_infected(v, timestep)
         v.move(GRID_SIZE)
 
     # Apply mortality and process infections
@@ -229,6 +229,90 @@ def init_simulation(num_bacteria, num_viruses, num_groups):
 
 
 
+def animate_simulation(steps=100):
+    """
+    Run and animate the agent-based model with real-time visualization:
+    - Left: grid view of DOM, bacteria, and viruses
+    - Right: time series of total bacterial and viral abundances
+
+    Args:
+        steps (int): Number of simulation steps to animate.
+    """
+    bacteria = simulation_state["bacteria"]
+    viruses = simulation_state["viruses"]
+    dom_pool = simulation_state["dom_pool"]
+    times = simulation_state["times"]
+    bacteria_counts = simulation_state["bacteria_counts"]
+    virus_counts = simulation_state["virus_counts"]
+
+    fig, (ax_grid, ax_plot) = plt.subplots(1, 2, figsize=(12, 6))
+    plt.tight_layout()
+
+    dom_img = ax_grid.imshow(dom_pool.grid.T, cmap='Blues', origin='lower', alpha=0.5)
+    scat_bac = ax_grid.scatter([], [], c=[], cmap='viridis', vmin=0.5, vmax=5, s=35, edgecolor='k', label='Bacteria')
+    scat_vir = ax_grid.scatter([], [], c='red', marker='x', s=40, label='Viruses')
+    ax_grid.set_xlim(0, GRID_SIZE[0])
+    ax_grid.set_ylim(0, GRID_SIZE[1])
+    ax_grid.set_title("Grid View")
+    ax_grid.legend()
+
+    line_bac, = ax_plot.plot([], [], label='Bacteria')
+    line_vir, = ax_plot.plot([], [], label='Viruses')
+    ax_plot.set_xlim(0, steps)
+    ax_plot.set_ylim(0, len(bacteria) + len(viruses))
+    ax_plot.set_title("Population Over Time")
+    ax_plot.set_xlabel("Time Step")
+    ax_plot.set_ylabel("Count")
+    ax_plot.legend()
+
+    def init():
+        """
+        Initialize animation with empty datasets.
+        """
+        scat_bac.set_offsets(np.empty((0, 2)))
+        scat_bac.set_array(np.array([]))
+        scat_vir.set_offsets(np.empty((0, 2)))
+        line_bac.set_data([], [])
+        line_vir.set_data([], [])
+        return scat_bac, scat_vir, dom_img, line_bac, line_vir
+
+    def update(frame):
+        """
+        Update function called for each frame of the animation.
+        Advances simulation by one step and updates the visualizations.
+
+        Args:
+            frame (int): The current frame number.
+
+        Returns:
+            tuple: Updated matplotlib artists for rendering.
+        """
+        step(bacteria, viruses, dom_pool, frame)
+
+        bac_pos = np.array([[b.x, b.y] for b in bacteria])
+        bac_color = np.array([b.biomass for b in bacteria])
+        vir_pos = np.array([[v.x, v.y] for v in viruses])
+
+        scat_bac.set_offsets(bac_pos)
+        scat_bac.set_array(bac_color)
+        scat_vir.set_offsets(vir_pos)
+        dom_img.set_array(dom_pool.grid.T)
+
+        times.append(frame)
+        bacteria_counts.append(len(bacteria))
+        virus_counts.append(len(viruses))
+
+        line_bac.set_data(times, bacteria_counts)
+        line_vir.set_data(times, virus_counts)
+        ax_plot.set_xlim(0, max(10, frame + 1))
+        ax_plot.set_ylim(0, max(max(bacteria_counts), max(virus_counts)) + 10)
+
+        return scat_bac, scat_vir, dom_img, line_bac, line_vir
+    
+
+    ani = animation.FuncAnimation(fig, update, init_func=init, frames=steps, interval=200, blit=True)
+    plt.show()
+
 
 # Grid size
 GRID_SIZE = (20, 20)
@@ -240,3 +324,9 @@ V_DECAY_RATE = 0.01
 V_BURST_SIZE = 5
 INFECTION_LAG = 5  # in timesteps
 TIMESTEPS = 100
+NUM_BAC = 50
+NUM_VIR = 5
+NUM_GROUPS = 2
+
+simulation_state = init_simulation(NUM_BAC, NUM_VIR, NUM_GROUPS)
+animate_simulation(TIMESTEPS)
